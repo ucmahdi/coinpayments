@@ -3,23 +3,22 @@ import { request as httpsRequest } from 'https';
 import { stringify } from 'querystring';
 
 import {
+  API_FORMAT,
   API_HOST,
   API_PATH,
   API_PROTOCOL,
-  API_VERSION,
-  API_FORMAT,
   API_VALID_RESPONSE,
+  API_VERSION,
 } from './constants';
 import CoinpaymentsError from './error';
-import { validatePayload } from './validation';
-
 import {
   CoinpaymentsCredentials,
-  CoinpaymentsRequest,
   CoinpaymentsInternalRequestOps,
   CoinpaymentsInternalResponse,
+  CoinpaymentsRequest,
   CoinpaymentsReturnCallback,
 } from './types/base';
+import { validatePayload } from './validation';
 
 export const getPrivateHeaders = (
   credentials: CoinpaymentsCredentials,
@@ -65,9 +64,9 @@ export const makeRequest = <ExpectedResponse>(
         }
 
         if (data.error !== API_VALID_RESPONSE) {
-          return reject(new CoinpaymentsError(data.error, { data }));
+          return reject(new CoinpaymentsError(data.error!, { data }));
         }
-        return resolve(data.result);
+        return resolve(data.result!);
       });
     });
     req.on('error', reject);
@@ -102,7 +101,7 @@ export const applyDefaultOptionValues = (
 };
 
 export const request = async <ExpectedResponse>(
-  credentials: CoinpaymentsCredentials,
+  { agent, ...credentials }: CoinpaymentsCredentials,
   options: CoinpaymentsRequest,
   callback?: CoinpaymentsReturnCallback<ExpectedResponse>,
 ): Promise<ExpectedResponse> => {
@@ -110,6 +109,8 @@ export const request = async <ExpectedResponse>(
     validatePayload(options);
     options = applyDefaultOptionValues(credentials, options);
     const reqOps = getRequestOptions(credentials, options);
+
+    if (agent) reqOps.agent = agent;
     const response: ExpectedResponse = await makeRequest<ExpectedResponse>(
       reqOps,
       options,

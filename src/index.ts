@@ -72,7 +72,7 @@ import { filterMassWithdrawalOpts } from './validation';
 class Coinpayments {
   private credentials: CoinpaymentsCredentials;
 
-  constructor({ key = '', secret = '' }: CoinpaymentsCredentials) {
+  constructor({ key = '', secret = '', agent }: CoinpaymentsCredentials) {
     if (!key) {
       throw new CoinpaymentsError('Missing public key');
     }
@@ -80,7 +80,7 @@ class Coinpayments {
       throw new CoinpaymentsError('Missing private key');
     }
 
-    this.credentials = { key, secret };
+    this.credentials = { key, secret, agent };
 
     this.getBasicInfo = this.getBasicInfo.bind(this);
     this.rates = this.rates.bind(this);

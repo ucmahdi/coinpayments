@@ -1,3 +1,4 @@
+import { Agent } from 'http';
 import CoinpaymentsError from '../error';
 
 export type CoinpaymentsReturnCallback<T> = (
@@ -8,6 +9,7 @@ export type CoinpaymentsReturnCallback<T> = (
 export interface CoinpaymentsCredentials {
   key: string;
   secret: string;
+  agent?: Agent | undefined;
 }
 
 export type isCoinpaymentsError = 'ok' | string | undefined;
@@ -18,6 +20,7 @@ export interface CoinpaymentsInternalRequestOps {
   host: string;
   path: string;
   headers: { [x: string]: string };
+  agent?: Agent | undefined;
 }
 
 export interface CoinpaymentsRequest {
